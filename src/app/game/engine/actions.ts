@@ -38,11 +38,17 @@ export function applyAction(
 
   // Prepare next state
   const nextGrid = cloneGrid(state.grid);
-  const prevState = { ...state, grid: cloneGrid(state.grid), achievedFibs: [...state.achievedFibs] };
+  const prevState = { 
+    ...state, 
+    grid: cloneGrid(state.grid), 
+    achievedFibs: [...state.achievedFibs],
+    counters: { ...state.counters }
+  };
   let nextScore = state.score - cost;
   let nextBestFib = state.bestFib;
   let nextNextFib = state.nextFib;
   const nextAchievedFibs = [...state.achievedFibs];
+  const nextCounters = { ...state.counters };
 
   let resultValue = 0;
   const participatingIndexes: number[] = [];
@@ -54,14 +60,17 @@ export function applyAction(
   } else if (action === 'INC') {
     resultValue = nextGrid[index].value + 1;
     nextGrid[index].value = resultValue;
+    nextCounters.inc++;
   } else if (action === 'SUM' || action === 'MUL') {
     const neighbors = getNeighborIndexes(index, state.grid, config.size);
     participatingIndexes.push(...neighbors);
     
     if (action === 'SUM') {
       resultValue = neighbors.reduce((acc, idx) => acc + state.grid[idx].value, 0);
+      nextCounters.sum++;
     } else {
       resultValue = neighbors.reduce((acc, idx) => acc * state.grid[idx].value, 1);
+      nextCounters.mul++;
     }
 
     // Reset all participating neighbor cells to 1
@@ -79,7 +88,7 @@ export function applyAction(
     }
 
     if (resultValue === state.nextFib) {
-      nextScore += 100;
+      nextScore += config.fibBonus;
       nextAchievedFibs.push(resultValue);
       nextNextFib = getNextRequiredFib(state.nextFib);
     }
@@ -94,6 +103,7 @@ export function applyAction(
     bestFib: nextBestFib,
     nextFib: nextNextFib,
     achievedFibs: nextAchievedFibs,
+    counters: nextCounters,
     lastMove: { action, clickedIndex: index, prevState },
     gameOver: false
   };

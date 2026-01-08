@@ -26,7 +26,7 @@ import { HapticsService } from '../../services/haptics.service';
 
         <div class="progress-section">
           <div class="objective-line">
-            Next bonus: <strong>{{ state.nextFib }}</strong> <span class="bonus-tag">+100 PTS</span>
+            Next bonus: <strong>{{ state.nextFib }}</strong> <span class="bonus-tag">+{{ config.fibBonus }} PTS</span>
           </div>
           
           <app-fib-progress
@@ -37,6 +37,21 @@ import { HapticsService } from '../../services/haptics.service';
           <div class="stats-chips">
             <div class="chip">Best: {{ state.bestFib }}</div>
             <div class="chip">Target: {{ state.nextFib }}</div>
+          </div>
+
+          <div class="action-counters">
+            <div class="counter-item">
+              <span class="counter-label">INC:</span>
+              <span class="counter-value">{{ state.counters.inc }}</span>
+            </div>
+            <div class="counter-item">
+              <span class="counter-label">SUM:</span>
+              <span class="counter-value">{{ state.counters.sum }}</span>
+            </div>
+            <div class="counter-item">
+              <span class="counter-label">MUL:</span>
+              <span class="counter-value">{{ state.counters.mul }}</span>
+            </div>
           </div>
         </div>
 
@@ -194,6 +209,14 @@ import { HapticsService } from '../../services/haptics.service';
         padding: 1px 6px;
         white-space: nowrap;
       }
+      .action-counters {
+        margin-top: 5px;
+        padding-top: 5px;
+        gap: 10px;
+      }
+      .counter-value {
+        font-size: 0.85rem;
+      }
       .controls {
         margin-bottom: 8px;
       }
@@ -257,6 +280,30 @@ import { HapticsService } from '../../services/haptics.service';
       font-size: 0.8rem;
       font-weight: 600;
       color: #666;
+    }
+    .action-counters {
+      display: flex;
+      justify-content: center;
+      gap: 15px;
+      margin-top: 10px;
+      padding-top: 10px;
+      border-top: 1px dashed #eee;
+    }
+    .counter-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .counter-label {
+      font-size: 0.6rem;
+      font-weight: bold;
+      color: #999;
+      text-transform: uppercase;
+    }
+    .counter-value {
+      font-size: 1rem;
+      font-weight: 800;
+      color: #555;
     }
     .controls {
       margin-bottom: 15px;
@@ -460,14 +507,14 @@ export class GameComponent {
     if (bonusAchieved) {
       this.floatingScores.push({
         id: this.fsIdCounter++,
-        value: '+100 BONUS!',
+        value: `+${this.config.fibBonus} BONUS!`,
         index,
         isBonus: true,
         isPenalty: false
       });
       
       // Also show the rest of the change
-      const rest = diff - 100;
+      const rest = diff - this.config.fibBonus;
       if (rest !== 0) {
         this.floatingScores.push({
           id: this.fsIdCounter++,

@@ -1,3 +1,4 @@
+import { describe, it, expect } from 'vitest';
 import { createNewGame, DEFAULT_CONFIG } from './init';
 
 describe('Game Initialization', () => {

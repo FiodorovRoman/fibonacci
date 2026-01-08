@@ -1,3 +1,4 @@
+import { describe, it, expect, beforeEach } from 'vitest';
 import { applyAction } from './actions';
 import { GameState, Grid } from '../models/game.models';
 import { DEFAULT_CONFIG } from './init';
@@ -15,12 +16,24 @@ describe('Actions Engine', () => {
 
     initialState = {
       grid,
-      score: 30,
+      score: DEFAULT_CONFIG.startScore,
       bestFib: 1,
       nextFib: 2,
       achievedFibs: [1],
+      counters: { inc: 0, sum: 0, mul: 0 },
       gameOver: false
     };
+  });
+
+  it('increments action counters', () => {
+    let state = applyAction(initialState, 0, 'INC');
+    expect(state.counters.inc).toBe(1);
+    
+    state = applyAction(state, 0, 'SUM');
+    expect(state.counters.sum).toBe(1);
+    
+    state = applyAction(state, 0, 'MUL');
+    expect(state.counters.mul).toBe(1);
   });
 
   it('SUM resets neighbors and keeps clicked cell as result', () => {
@@ -86,13 +99,13 @@ describe('Actions Engine', () => {
     const state = applyAction(initialState, 0, 'SUM');
     expect(state.grid[0].value).toBe(2);
     expect(state.nextFib).toBe(3);
-    expect(state.score).toBe(initialState.score - DEFAULT_CONFIG.costs.sum + 100 + 2);
+    expect(state.score).toBe(initialState.score - DEFAULT_CONFIG.costs.sum + DEFAULT_CONFIG.fibBonus + 2);
     expect(state.achievedFibs).toEqual([1, 2]);
   });
 
   it('not enough score => gameOver=true and state unchanged (except gameOver flag)', () => {
     const lowScoreState = { ...initialState, score: 5 };
-    const state = applyAction(lowScoreState, 0, 'SUM'); // cost is 10
+    const state = applyAction(lowScoreState, 0, 'SUM'); // cost is 15
     
     expect(state.gameOver).toBe(true);
     expect(state.score).toBe(5);
@@ -112,8 +125,8 @@ describe('Actions Engine', () => {
     // grid[0] is 1. INC -> 2.
     const state = applyAction(initialState, 0, 'INC');
     expect(state.grid[0].value).toBe(2);
-    // score: 30 - 10 (inc) + 100 (bonus) + 2 (result) = 122
-    expect(state.score).toBe(122);
+    // score: 40 - 20 (inc) + 100 (bonus) + 2 (result) = 122
+    expect(state.score).toBe(initialState.score - DEFAULT_CONFIG.costs.inc + DEFAULT_CONFIG.fibBonus + 2);
   });
 
   it('stores undo snapshot in lastMove', () => {

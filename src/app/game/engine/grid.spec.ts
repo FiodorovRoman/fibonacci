@@ -1,4 +1,5 @@
 import { Grid } from '../models/game.models';
+import { describe, it, expect } from 'vitest';
 import { toRowCol, toIndex, getNeighborIndexes, cloneGrid } from './grid';
 
 describe('Grid Utilities', () => {

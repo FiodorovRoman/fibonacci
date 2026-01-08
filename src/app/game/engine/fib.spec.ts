@@ -1,3 +1,4 @@
+import { describe, it, expect } from 'vitest';
 import { isFibonacci, getNextRequiredFib, FIB_SEQUENCE } from './fib';
 
 describe('Fibonacci Logic', () => {

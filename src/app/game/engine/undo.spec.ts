@@ -1,3 +1,4 @@
+import { describe, it, expect } from 'vitest';
 import {undo} from './undo';
 import {createNewGame} from './init';
 import {applyAction} from './actions';
@@ -16,8 +17,8 @@ describe('undo', () => {
     
     const stateAfterAction = applyAction(initialState, index, 'INC');
     expect(stateAfterAction.lastMove).toBeDefined();
-    // initialState.score is 30. INC cost 10. Result value is 2. Bonus is 100 because nextFib is 2.
-    // 30 - 10 + 100 + 2 = 122.
+    // initialState.score is 40. INC cost 20. Result value is 2. Bonus is 100 because nextFib is 2.
+    // 40 - 20 + 100 + 2 = 122.
     expect(stateAfterAction.score).toBe(122); 
     
     const stateAfterUndo = undo(stateAfterAction);
@@ -25,6 +26,7 @@ describe('undo', () => {
     // Check that it matches the initial state
     expect(stateAfterUndo.score).toBe(initialState.score);
     expect(stateAfterUndo.grid[index].value).toBe(initialState.grid[index].value);
+    expect(stateAfterUndo.counters.inc).toBe(initialState.counters.inc);
     expect(stateAfterUndo.lastMove).toBeUndefined();
   });
 

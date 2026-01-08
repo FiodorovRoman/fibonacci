@@ -4,13 +4,14 @@ import { mulberry32, pickRandomUniqueIndexes } from './random';
 export const DEFAULT_CONFIG: GameConfig = {
   size: 4,
   costs: {
-    inc: 10,
-    sum: 10,
-    mul: 20,
-    unblock: 100
+    inc: 20,
+    sum: 15,
+    mul: 30,
+    unblock: 120
   },
-  startScore: 30,
-  startUnblocked: 4
+  startScore: 40,
+  startUnblocked: 4,
+  fibBonus: 100
 };
 
 export function createNewGame(seed?: number, config: GameConfig = DEFAULT_CONFIG): GameState {
@@ -36,6 +37,7 @@ export function createNewGame(seed?: number, config: GameConfig = DEFAULT_CONFIG
     bestFib: 1,
     nextFib: 2,
     achievedFibs: [1],
+    counters: { inc: 0, sum: 0, mul: 0 },
     gameOver: false
   };
 }
