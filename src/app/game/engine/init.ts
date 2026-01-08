@@ -21,7 +21,8 @@ export function createNewGame(seed?: number, config: GameConfig = DEFAULT_CONFIG
   const gridSize = config.size * config.size;
   const grid: Grid = Array.from({ length: gridSize }, () => ({
     blocked: true,
-    value: 0
+    value: 0,
+    lastTouchedMove: 0
   }));
   
   const unblockedIndexes = pickRandomUniqueIndexes(config.startUnblocked, rng, gridSize);
@@ -29,6 +30,7 @@ export function createNewGame(seed?: number, config: GameConfig = DEFAULT_CONFIG
   unblockedIndexes.forEach(index => {
     grid[index].blocked = false;
     grid[index].value = 1;
+    grid[index].lastTouchedMove = 0;
   });
   
   return {
@@ -38,6 +40,7 @@ export function createNewGame(seed?: number, config: GameConfig = DEFAULT_CONFIG
     nextFib: 2,
     achievedFibs: [1],
     counters: { inc: 0, sum: 0, mul: 0 },
+    moveNumber: 0,
     gameOver: false
   };
 }

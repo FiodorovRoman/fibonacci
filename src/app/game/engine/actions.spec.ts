@@ -7,12 +7,12 @@ describe('Actions Engine', () => {
   let initialState: GameState;
 
   beforeEach(() => {
-    const grid: Grid = Array.from({ length: 16 }, () => ({ blocked: true, value: 0 }));
+    const grid: Grid = Array.from({ length: 16 }, () => ({ blocked: true, value: 0, lastTouchedMove: 0 }));
     // Unblock a few for testing
-    grid[0] = { blocked: false, value: 1 };
-    grid[1] = { blocked: false, value: 1 };
-    grid[4] = { blocked: false, value: 2 };
-    grid[5] = { blocked: false, value: 3 };
+    grid[0] = { blocked: false, value: 1, lastTouchedMove: 0 };
+    grid[1] = { blocked: false, value: 1, lastTouchedMove: 0 };
+    grid[4] = { blocked: false, value: 2, lastTouchedMove: 0 };
+    grid[5] = { blocked: false, value: 3, lastTouchedMove: 0 };
 
     initialState = {
       grid,
@@ -21,8 +21,115 @@ describe('Actions Engine', () => {
       nextFib: 2,
       achievedFibs: [1],
       counters: { inc: 0, sum: 0, mul: 0 },
+      moveNumber: 0,
       gameOver: false
     };
+  });
+
+  describe('Auto-blocking', () => {
+    it('blocks a cell after 12 moves of inactivity', () => {
+      // Unblock one more cell to have 5 unblocked (to satisfy safety rule)
+      initialState.grid[2] = { blocked: false, value: 1, lastTouchedMove: 0 };
+      // unblocked are 0, 1, 2, 4, 5. (5 cells)
+      
+      let state = initialState;
+      // Perform 11 actions on cell 0.
+      for (let i = 0; i < 11; i++) {
+        state = applyAction(state, 0, 'INC');
+      }
+      // Cell 1 has lastTouchedMove = 0. Current moveNumber = 11. 11-0 = 11. Not eligible yet.
+      expect(state.grid[1].blocked).toBe(false);
+      
+      // 12th action on cell 0.
+      state = applyAction(state, 0, 'INC');
+      // Current moveNumber = 12. Cell 1: 12-0 = 12. Eligible.
+      // Cell 1 should be blocked now.
+      expect(state.grid[1].blocked).toBe(true);
+      expect(state.grid[1].value).toBe(1);
+    });
+
+    it('obeys safety rule: minimum 4 unblocked cells', () => {
+      // Initially 4 unblocked: 0, 1, 4, 5.
+      let state = initialState;
+      // Perform 12 actions on cell 0.
+      for (let i = 0; i < 12; i++) {
+        state = applyAction(state, 0, 'INC');
+      }
+      // Cells 1, 4, 5 are eligible (12-0 = 12), but blocking one would leave only 3 unblocked.
+      // So none should be blocked.
+      expect(state.grid.filter(c => !c.blocked).length).toBe(4);
+      expect(state.grid[1].blocked).toBe(false);
+      expect(state.grid[4].blocked).toBe(false);
+      expect(state.grid[5].blocked).toBe(false);
+    });
+
+    it('blocks only the oldest eligible cell', () => {
+      // Unblock 2 more: 2, 3. Total unblocked: 0, 1, 2, 3, 4, 5. (6 cells)
+      initialState.grid[2] = { blocked: false, value: 1, lastTouchedMove: 0 };
+      initialState.grid[3] = { blocked: false, value: 1, lastTouchedMove: 0 };
+      
+      // Move 1: touch cell 1
+      let state = applyAction(initialState, 1, 'INC'); // cell 1 lastTouchedMove = 1
+      
+      // Move 2 to 12: touch cell 0
+      for (let i = 0; i < 11; i++) {
+        state = applyAction(state, 0, 'INC');
+      }
+      // Current moveNumber = 12.
+      // Cells 2, 3, 4, 5 have lastTouchedMove = 0.
+      // Cell 1 has lastTouchedMove = 1.
+      
+      // At move 12, cell 2 (oldest eligible) should be blocked.
+      expect(state.grid[2].blocked).toBe(true);
+      expect(state.grid[3].blocked).toBe(false);
+      expect(state.grid[1].blocked).toBe(false);
+    });
+
+    it('does not auto-block the cell that was just clicked', () => {
+      // Setup: 5 cells unblocked. Cell 2 has not been touched for 12 moves.
+      // But we click cell 2 in the 13th move.
+      initialState.grid[2] = { blocked: false, value: 1, lastTouchedMove: 0 };
+      
+      let state = initialState;
+      for (let i = 0; i < 11; i++) {
+        state = applyAction(state, 0, 'INC');
+      }
+      // moveNumber = 11. Cell 2 lastTouchedMove = 0.
+      
+      // 12th move: click cell 2.
+      state = applyAction(state, 2, 'INC');
+      // moveNumber = 12. Cell 2 lastTouchedMove = 12.
+      // Cell 1 is eligible (12-0 = 12).
+      expect(state.grid[2].blocked).toBe(false);
+      expect(state.grid[1].blocked).toBe(true);
+    });
+  });
+
+  describe('Undo', () => {
+    it('restores moveNumber and lastTouchedMove', async () => {
+      const { undo } = await import('./undo');
+      let state = applyAction(initialState, 0, 'INC');
+      expect(state.moveNumber).toBe(1);
+      expect(state.grid[0].lastTouchedMove).toBe(1);
+      
+      state = undo(state);
+      expect(state.moveNumber).toBe(0);
+      expect(state.grid[0].lastTouchedMove).toBe(0);
+    });
+
+    it('restores auto-blocked state', async () => {
+      const { undo } = await import('./undo');
+      initialState.grid[2] = { blocked: false, value: 1, lastTouchedMove: 0 };
+      
+      let state = initialState;
+      for (let i = 0; i < 12; i++) {
+        state = applyAction(state, 0, 'INC');
+      }
+      expect(state.grid[1].blocked).toBe(true);
+      
+      state = undo(state);
+      expect(state.grid[1].blocked).toBe(false);
+    });
   });
 
   it('increments action counters', () => {
