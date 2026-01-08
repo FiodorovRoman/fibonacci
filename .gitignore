@@ -40,11 +40,7 @@ yarn-error.log*
 
 # IDEs and editors
 .idea/
-.vscode/*
-!.vscode/extensions.json
-!.vscode/launch.json
-!.vscode/settings.json
-!.vscode/tasks.json
+.vscode/
 .history/
 .project
 .classpath
