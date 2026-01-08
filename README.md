@@ -15,7 +15,7 @@ The game focuses on planning, resource management, and long-term strategy rather
 * The result of operations increases the score
 * Discovering Fibonacci numbers in the correct order grants bonuses
 
-The ultimate goal is to reach the **largest possible Fibonacci number** (e.g. 144, 233, 377, 610).
+The ultimate goal is to reach the **largest possible Fibonacci number** (e.g. 144, 233, 377, 610, 987, 1597).
 
 ---
 
@@ -67,7 +67,7 @@ The ultimate goal is to reach the **largest possible Fibonacci number** (e.g. 14
 
 ### Milestones
 
-Special milestones (e.g. **144, 233, 377, 610**) are visually highlighted and celebrated.
+Special milestones (e.g. **144, 233, 377, 610, 987, 1597**) are visually highlighted and celebrated.
 
 ---
 

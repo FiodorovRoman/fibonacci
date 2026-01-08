@@ -13,7 +13,7 @@ export class FibProgressComponent implements AfterViewChecked {
   @Input() achievedFibs: number[] = [];
   @Input() nextFib: number = 2;
 
-  readonly sequence: number[] = [1, 2, 3, 5, 8, 13, 21, 34, 55, 89, 144, 233, 377, 610];
+  readonly sequence: number[] = [1, 2, 3, 5, 8, 13, 21, 34, 55, 89, 144, 233, 377, 610, 987, 1597];
 
   @ViewChild('ladder') ladderElement!: ElementRef<HTMLDivElement>;
 
@@ -36,7 +36,7 @@ export class FibProgressComponent implements AfterViewChecked {
   }
 
   isMilestone(fib: number): boolean {
-    return [144, 233, 377, 610].includes(fib);
+    return [144, 233, 377, 610, 987, 1597].includes(fib);
   }
 
   private scrollToActive(): boolean {

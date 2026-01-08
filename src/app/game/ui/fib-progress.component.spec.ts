@@ -32,7 +32,7 @@ describe('FibProgressComponent', () => {
     const items = fixture.debugElement.queryAll(By.css('.fib-item'));
     expect(items.length).toBe(component.sequence.length);
     expect(items[0].nativeElement.textContent).toContain('1');
-    expect(items[items.length - 1].nativeElement.textContent).toContain('610');
+    expect(items[items.length - 1].nativeElement.textContent).toContain('1597');
   });
 
   it('should highlight the current target (nextFib)', () => {
@@ -64,7 +64,7 @@ describe('FibProgressComponent', () => {
     fixture.detectChanges();
 
     const futureItems = fixture.debugElement.queryAll(By.css('.fib-item.future'));
-    // sequence: [1, 2, 3, 5, 8, 13, 21, 34, 55, 89, 144, 233, 377, 610]
+    // sequence: [1, 2, 3, 5, 8, 13, 21, 34, 55, 89, 144, 233, 377, 610, 987, 1597]
     // achieved: 2, current: 3, future: 1, 5, 8... (12 items)
     expect(futureItems.length).toBe(component.sequence.length - 2);
     expect(futureItems[0].nativeElement.textContent).toContain('1');
