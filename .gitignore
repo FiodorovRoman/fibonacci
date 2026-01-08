@@ -58,3 +58,5 @@ testem.log
 __screenshots__/
 
 # Miscellaneous
+.firebaserc
+.firebase/
