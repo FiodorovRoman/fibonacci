@@ -460,7 +460,7 @@ export class GameComponent {
         this.haptics.warning();
       } else {
         const bonusAchieved = oldNextFib !== this.state.nextFib;
-        this.addFloatingScores(oldScore, this.state.score, index, bonusAchieved);
+        this.addFloatingScores(oldScore, this.state.score, index, bonusAchieved, oldNextFib);
         if (bonusAchieved) {
           this.haptics.success();
           this.triggerCelebration();
@@ -494,9 +494,9 @@ export class GameComponent {
     }, 1000);
   }
 
-  private addFloatingScores(oldScore: number, newScore: number, index: number, bonusAchieved: boolean) {
+  private addFloatingScores(oldScore: number, newScore: number, index: number, bonusAchieved: boolean, oldNextFib: number) {
     // Determine cost and result based on score change
-    // This is a bit tricky because applyAction does: score = score - cost + 100(bonus) + resultValue
+    // This is a bit tricky because applyAction does: score = score - cost + bonus + resultValue
     // We want to show individual floating texts for juice.
     
     // Instead of reconstructing, let's just show the net change if it's positive, 
@@ -514,7 +514,7 @@ export class GameComponent {
       });
       
       // Also show the rest of the change
-      const rest = diff - this.config.fibBonus;
+      const rest = diff - oldNextFib;
       if (rest !== 0) {
         this.floatingScores.push({
           id: this.fsIdCounter++,
