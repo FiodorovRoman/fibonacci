@@ -1,0 +1,22 @@
+<div class="glass-card">
+  <div class="ladder-header">
+    <span class="ladder-label">Road to 610</span>
+  </div>
+  
+  <div class="ladder-container" #ladder>
+    <div class="ladder-track">
+      <div 
+        *ngFor="let fib of sequence" 
+        class="fib-item"
+        [class.achieved]="isAchieved(fib)"
+        [class.current]="isCurrent(fib)"
+        [class.future]="!isAchieved(fib) && !isCurrent(fib)"
+        [class.milestone]="isMilestone(fib)"
+      >
+        <div class="milestone-star" *ngIf="isMilestone(fib)">★</div>
+        <div class="fib-value">{{ fib }}</div>
+        <div class="fib-status" *ngIf="isAchieved(fib)">✓</div>
+      </div>
+    </div>
+  </div>
+</div>

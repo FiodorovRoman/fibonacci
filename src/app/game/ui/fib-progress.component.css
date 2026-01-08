@@ -1,0 +1,122 @@
+.glass-card {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.4), rgba(255, 255, 255, 0.1));
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 16px;
+  padding: 15px;
+  box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.1);
+  margin: 10px 0;
+}
+
+.ladder-header {
+  text-align: left;
+  margin-bottom: 10px;
+  padding-left: 5px;
+}
+
+.ladder-label {
+  font-size: 0.8rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  color: #666;
+  opacity: 0.8;
+}
+
+.ladder-container {
+  width: 100%;
+  overflow-x: hidden;
+  padding: 10px 0;
+  display: flex;
+  justify-content: flex-start;
+}
+
+.ladder-track {
+  display: flex;
+  gap: 15px;
+  padding: 0 50%; /* Allows first and last elements to be centered */
+}
+
+.fib-item {
+  min-width: 60px;
+  height: 60px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: rgba(221, 221, 221, 0.5);
+  transition: all 0.4s ease;
+  position: relative;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.milestone-star {
+  position: absolute;
+  top: -12px;
+  color: #ffd700;
+  font-size: 16px;
+  text-shadow: 0 0 5px rgba(255, 215, 0, 0.5);
+  animation: twinkle 2s infinite ease-in-out;
+}
+
+@keyframes twinkle {
+  0%, 100% { opacity: 0.7; transform: scale(1); }
+  50% { opacity: 1; transform: scale(1.2); }
+}
+
+.milestone.achieved {
+  border-color: #ffd700;
+  box-shadow: 0 0 10px rgba(255, 215, 0, 0.2);
+}
+
+.fib-value {
+  font-weight: bold;
+  font-size: 1.1rem;
+}
+
+.fib-status {
+  position: absolute;
+  top: -5px;
+  right: -5px;
+  background: #4caf50;
+  color: white;
+  border-radius: 50%;
+  width: 20px;
+  height: 20px;
+  font-size: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.achieved {
+  background: rgba(200, 230, 201, 0.8);
+  color: #2e7d32;
+  border: 2px solid #4caf50;
+}
+
+.current {
+  background: #fff;
+  color: #1976d2;
+  border: 3px solid #1976d2;
+  transform: scale(1.1);
+  box-shadow: 0 4px 12px rgba(25, 118, 210, 0.4);
+  animation: pulse 2s infinite ease-in-out;
+  z-index: 1;
+}
+
+.future {
+  opacity: 0.4;
+  background: rgba(238, 238, 238, 0.3);
+  color: #777;
+}
+
+@keyframes pulse {
+  0% { transform: scale(1.1); box-shadow: 0 4px 12px rgba(25, 118, 210, 0.4); }
+  50% { transform: scale(1.18); box-shadow: 0 8px 20px rgba(25, 118, 210, 0.5); }
+  100% { transform: scale(1.1); box-shadow: 0 4px 12px rgba(25, 118, 210, 0.4); }
+}

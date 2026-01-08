@@ -1,28 +1,63 @@
-# Angular specific
-/dist/
-/out-tsc/
-/tmp/
-/coverage/
-/e2e/test-output/
-/.angular/
+# Angular
 .angular/
-
-# Node modules and dependency files
-/node_modules/
-/package-lock.json
-/yarn.lock
-
-# Environment files
-/.env
-
-# Angular CLI and build artefacts
-/.angular-cli.json
+dist/
+/bazel-out
+/connect.lock
+/coverage
+/e2e/test-output/
 /.ng/
-
-# TypeScript cache
+/out-tsc
+/tmp
 *.tsbuildinfo
 
-# Logs
+# Capacitor
+/www/
+/android/app/src/main/assets/public/
+/android/app/src/main/assets/capacitor.config.json
+/android/app/src/main/assets/capacitor.plugins.json
+/android/app/src/main/res/xml/config.xml
+/android/capacitor-cordova-android-plugins/
+/ios/App/App/public/
+/ios/App/App/capacitor.config.json
+/ios/App/App/config.xml
+
+# Android
+.gradle/
+build/
+android/app/build/
+android/build/
+local.properties
+*.iml
+*.keystore
+*.jks
+
+# Node
+node_modules/
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+/.env
+
+# IDEs and editors
+.idea/
+.vscode/*
+!.vscode/extensions.json
+!.vscode/launch.json
+!.vscode/settings.json
+!.vscode/tasks.json
+.history/
+.project
+.classpath
+.settings/
+.DS_Store
+Thumbs.db
+*.sublime-workspace
+*.launch
+
+# System files
+/typings
+testem.log
+.sass-cache/
+__screenshots__/
+
+# Miscellaneous
