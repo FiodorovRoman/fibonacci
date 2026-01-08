@@ -16,9 +16,9 @@ describe('Actions Engine', () => {
 
     initialState = {
       grid,
-      score: DEFAULT_CONFIG.startScore,
+      score: 1000,
       bestFib: 1,
-      nextFib: 2,
+      nextFib: 1000, // High so it doesn't trigger bonuses and mess up score math
       achievedFibs: [1],
       counters: { inc: 0, sum: 0, mul: 0 },
       moveNumber: 0,
@@ -36,6 +36,7 @@ describe('Actions Engine', () => {
       // Perform 11 actions on cell 0.
       for (let i = 0; i < 11; i++) {
         state = applyAction(state, 0, 'INC');
+        // resultValue will be 2, 3, 4, 5... not matching nextFib=2 except first move
       }
       // Cell 1 has lastTouchedMove = 0. Current moveNumber = 11. 11-0 = 11. Not eligible yet.
       expect(state.grid[1].blocked).toBe(false);
@@ -152,7 +153,7 @@ describe('Actions Engine', () => {
     expect(state.grid[1].value).toBe(1);
     expect(state.grid[4].value).toBe(1);
     expect(state.grid[5].value).toBe(1);
-    expect(state.score).toBe(initialState.score - DEFAULT_CONFIG.costs.sum + 7);
+    expect(state.score).toBe(initialState.score - 15 + 7);
   });
 
   it('MUL works with diagonals', () => {
@@ -163,7 +164,7 @@ describe('Actions Engine', () => {
     expect(state.grid[1].value).toBe(1);
     expect(state.grid[4].value).toBe(1);
     expect(state.grid[5].value).toBe(1);
-    expect(state.score).toBe(initialState.score - DEFAULT_CONFIG.costs.mul + 6);
+    expect(state.score).toBe(initialState.score - 30 + 6);
   });
 
   it('cost deducted even if only itself participates', () => {
@@ -174,11 +175,11 @@ describe('Actions Engine', () => {
 
     const nextState = applyAction(state, 10, 'SUM');
     expect(nextState.grid[10].value).toBe(5);
-    expect(nextState.score).toBe(state.score - DEFAULT_CONFIG.costs.sum + 5);
+    expect(nextState.score).toBe(state.score - 15 + 5);
   });
 
-  it('out-of-order fib gives no +100 and does not advance', () => {
-    // nextFib is 2. If we make an 8.
+  it('out-of-order fib gives no bonus and does not advance', () => {
+    // nextFib is 1000. If we make an 8.
     // Neighbors of 0: 0, 1, 4, 5.
     initialState.grid[0].value = 2;
     initialState.grid[1].value = 2;
@@ -189,24 +190,26 @@ describe('Actions Engine', () => {
     const state = applyAction(initialState, 0, 'SUM');
     expect(state.grid[0].value).toBe(8);
     expect(state.bestFib).toBe(8);
-    expect(state.nextFib).toBe(2); // Still 2
-    expect(state.score).toBe(initialState.score - DEFAULT_CONFIG.costs.sum + 8); // No bonus
+    expect(state.nextFib).toBe(1000); // Still 1000
+    expect(state.score).toBe(initialState.score - 15 + 8); // No bonus
     expect(state.achievedFibs).toEqual([1]);
   });
 
-  it('advances nextFib and adds bonus when matching', () => {
-    // nextFib is 2.
+  it('advances nextFib and adds bonus (equal to value) when matching', () => {
+    // Set nextFib to 2 for this test
+    const testState = { ...initialState, nextFib: 2 };
     // Neighbors 0, 1, 4, 5.
     // To get 2:
-    initialState.grid[0].value = 1;
-    initialState.grid[1].value = 1;
-    initialState.grid[4].blocked = true;
-    initialState.grid[5].blocked = true;
+    testState.grid[0].value = 1;
+    testState.grid[1].value = 1;
+    testState.grid[4].blocked = true;
+    testState.grid[5].blocked = true;
     
-    const state = applyAction(initialState, 0, 'SUM');
+    const state = applyAction(testState, 0, 'SUM');
     expect(state.grid[0].value).toBe(2);
     expect(state.nextFib).toBe(3);
-    expect(state.score).toBe(initialState.score - DEFAULT_CONFIG.costs.sum + DEFAULT_CONFIG.fibBonus + 2);
+    // bonus is 2. Score: 1000 - 15 + 2 (result) + 2 (bonus) = 989
+    expect(state.score).toBe(testState.score - 15 + 2 + 2);
     expect(state.achievedFibs).toEqual([1, 2]);
   });
 
@@ -224,16 +227,17 @@ describe('Actions Engine', () => {
     const state = applyAction(highState, 2, 'UNBLOCK'); // 2 is blocked
     expect(state.grid[2].blocked).toBe(false);
     expect(state.grid[2].value).toBe(1);
-    expect(state.score).toBe(highState.score - DEFAULT_CONFIG.costs.unblock + 1);
+    expect(state.score).toBe(highState.score - 120 + 1);
   });
 
   it('INC works and deducts cost (and adds bonus if reaches nextFib)', () => {
     // nextFib is 2.
+    const testState = { ...initialState, nextFib: 2 };
     // grid[0] is 1. INC -> 2.
-    const state = applyAction(initialState, 0, 'INC');
+    const state = applyAction(testState, 0, 'INC');
     expect(state.grid[0].value).toBe(2);
-    // score: 40 - 20 (inc) + 100 (bonus) + 2 (result) = 122
-    expect(state.score).toBe(initialState.score - DEFAULT_CONFIG.costs.inc + DEFAULT_CONFIG.fibBonus + 2);
+    // score: 1000 - 20 (inc) + 2 (bonus) + 2 (result) = 984
+    expect(state.score).toBe(testState.score - 20 + 2 + 2);
   });
 
   it('stores undo snapshot in lastMove', () => {

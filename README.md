@@ -57,7 +57,7 @@ The ultimate goal is to reach the **largest possible Fibonacci number** (e.g. 14
   ```
 * Discovering the **next required Fibonacci number**:
 
-  * Grants a **bonus score**
+  * Grants a **bonus score equal to the number discovered**
   * Advances progression
 * Discovering a Fibonacci number **out of order**:
 

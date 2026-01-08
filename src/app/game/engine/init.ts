@@ -10,8 +10,7 @@ export const DEFAULT_CONFIG: GameConfig = {
     unblock: 120
   },
   startScore: 40,
-  startUnblocked: 4,
-  fibBonus: 100
+  startUnblocked: 4
 };
 
 export function createNewGame(seed?: number, config: GameConfig = DEFAULT_CONFIG): GameState {

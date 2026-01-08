@@ -86,6 +86,22 @@ export function applyAction(
     nextGrid[index].lastTouchedMove = nextMoveNumber;
   }
 
+  // Update Fibonacci logic
+  if (isFibonacci(resultValue)) {
+    if (resultValue > nextBestFib) {
+      nextBestFib = resultValue;
+    }
+
+    if (resultValue === state.nextFib) {
+      nextScore += resultValue;
+      nextAchievedFibs.push(resultValue);
+      nextNextFib = getNextRequiredFib(state.nextFib);
+    }
+  }
+
+  // Result is added to score
+  nextScore += resultValue;
+
   // Auto-blocking logic
   const unblockedCells = nextGrid
     .map((cell, idx) => ({ cell, idx }))
@@ -103,22 +119,6 @@ export function applyAction(
       nextGrid[oldest.idx].value = 1;
     }
   }
-
-  // Update Fibonacci logic
-  if (isFibonacci(resultValue)) {
-    if (resultValue > nextBestFib) {
-      nextBestFib = resultValue;
-    }
-
-    if (resultValue === state.nextFib) {
-      nextScore += config.fibBonus;
-      nextAchievedFibs.push(resultValue);
-      nextNextFib = getNextRequiredFib(state.nextFib);
-    }
-  }
-
-  // Result is added to score
-  nextScore += resultValue;
 
   return {
     grid: nextGrid,

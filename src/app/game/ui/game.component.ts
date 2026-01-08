@@ -26,7 +26,7 @@ import { HapticsService } from '../../services/haptics.service';
 
         <div class="progress-section">
           <div class="objective-line">
-            Next bonus: <strong>{{ state.nextFib }}</strong> <span class="bonus-tag">+{{ config.fibBonus }} PTS</span>
+            Next bonus: <strong>{{ state.nextFib }}</strong> <span class="bonus-tag">+{{ state.nextFib }} PTS</span>
           </div>
           
           <app-fib-progress
@@ -507,7 +507,7 @@ export class GameComponent {
     if (bonusAchieved) {
       this.floatingScores.push({
         id: this.fsIdCounter++,
-        value: `+${this.config.fibBonus} BONUS!`,
+        value: `+${oldNextFib} BONUS!`,
         index,
         isBonus: true,
         isPenalty: false

@@ -17,9 +17,9 @@ describe('undo', () => {
     
     const stateAfterAction = applyAction(initialState, index, 'INC');
     expect(stateAfterAction.lastMove).toBeDefined();
-    // initialState.score is 40. INC cost 20. Result value is 2. Bonus is 100 because nextFib is 2.
-    // 40 - 20 + 100 + 2 = 122.
-    expect(stateAfterAction.score).toBe(122); 
+    // initialState.score is 40. INC cost 20. Result value is 2. Bonus is 2 because nextFib is 2.
+    // 40 - 20 + 2 + 2 = 24.
+    expect(stateAfterAction.score).toBe(24); 
     
     const stateAfterUndo = undo(stateAfterAction);
     

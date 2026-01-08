@@ -9,7 +9,6 @@ export type GameConfig = {
   costs: { inc: number; sum: number; mul: number; unblock: number };
   startScore: number;
   startUnblocked: 4;
-  fibBonus: number;
 };
 
 export type ActionCounters = { inc: number; sum: number; mul: number };
