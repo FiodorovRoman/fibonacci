@@ -26,6 +26,12 @@ import { CellComponent } from './cell.component';
       margin: 0 auto;
       position: relative;
     }
+    @media (max-width: 480px) {
+      .grid-container {
+        grid-gap: 6px;
+        padding: 6px;
+      }
+    }
   `]
 })
 export class GridComponent implements OnChanges {

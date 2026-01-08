@@ -20,14 +20,27 @@ import { Cell } from '../models/game.models';
     </div>
   `,
   styles: [`
+    :host {
+      --cell-size: 80px;
+    }
+    @media (max-width: 480px) {
+      :host {
+        --cell-size: 70px;
+      }
+    }
+    @media (max-width: 360px) {
+      :host {
+        --cell-size: 60px;
+      }
+    }
     .cell {
-      width: 80px;
-      height: 80px;
+      width: var(--cell-size);
+      height: var(--cell-size);
       border: 2px solid #ccc;
       display: flex;
       justify-content: center;
       align-items: center;
-      font-size: 24px;
+      font-size: calc(var(--cell-size) * 0.3);
       font-weight: bold;
       cursor: pointer;
       user-select: none;

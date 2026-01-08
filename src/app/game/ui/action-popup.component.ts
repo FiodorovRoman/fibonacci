@@ -178,8 +178,21 @@ import { getNeighborIndexes } from '../engine/grid';
       box-shadow: 0 2px 5px rgba(0,0,0,0.2);
       transition: transform 0.2s;
     }
-    .cancel-btn:hover {
-      transform: rotate(90deg) scale(1.1);
+    @media (max-width: 480px) {
+      .popup-content {
+        padding: 16px;
+        min-width: 180px;
+      }
+      .actions-grid {
+        gap: 10px;
+      }
+      .action-btn {
+        width: 56px;
+        height: 56px;
+      }
+      .action-btn.unblock {
+        padding: 0 12px;
+      }
     }
   `]
 })

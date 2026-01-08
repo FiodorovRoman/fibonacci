@@ -107,6 +107,27 @@ import { HapticsService } from '../../services/haptics.service';
       max-width: 480px;
       text-align: center;
     }
+    @media (max-width: 480px) {
+      .game-container {
+        padding: 10px;
+      }
+      .main-card {
+        padding: 15px;
+      }
+      .score-value {
+        font-size: 3rem;
+      }
+      .game-title {
+        margin-bottom: 10px;
+      }
+      .hero-score {
+        margin-bottom: 10px;
+      }
+      .progress-section {
+        padding: 10px;
+        margin-bottom: 10px;
+      }
+    }
     .game-title {
       font-size: 1rem;
       text-transform: uppercase;
@@ -116,6 +137,77 @@ import { HapticsService } from '../../services/haptics.service';
     }
     .hero-score {
       margin-bottom: 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    @media (min-width: 481px) {
+       .main-card {
+         max-height: 95vh;
+         overflow-y: auto;
+       }
+    }
+    @media (max-width: 480px) {
+      .game-container {
+        padding: 5px;
+      }
+      .main-card {
+        padding: 10px;
+        border-radius: 0;
+        box-shadow: none;
+        min-height: 100vh;
+      }
+      .hero-score {
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 5px;
+        background: #f0f0f0;
+        padding: 5px 12px;
+        border-radius: 12px;
+      }
+      .score-label {
+        margin-right: 10px;
+      }
+      .score-value {
+        font-size: 1.8rem;
+      }
+      .progress-section {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        justify-content: space-between;
+        gap: 8px;
+        padding: 5px;
+        margin-bottom: 5px;
+      }
+      .objective-line {
+        display: none; /* Already have Target chip and progress ladder */
+      }
+      .stats-chips {
+        margin-top: 0;
+        flex-direction: column;
+        gap: 2px;
+      }
+      .chip {
+        font-size: 0.65rem;
+        padding: 1px 6px;
+        white-space: nowrap;
+      }
+      .controls {
+        margin-bottom: 8px;
+      }
+      .controls button {
+        padding: 6px 12px;
+        font-size: 0.8rem;
+      }
+      app-fib-progress {
+        flex: 1;
+        min-width: 0;
+      }
+      .game-title {
+        display: none; /* Hide title on mobile to save space */
+      }
     }
     .score-label {
       font-size: 0.8rem;

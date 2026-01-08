@@ -120,3 +120,27 @@
   50% { transform: scale(1.18); box-shadow: 0 8px 20px rgba(25, 118, 210, 0.5); }
   100% { transform: scale(1.1); box-shadow: 0 4px 12px rgba(25, 118, 210, 0.4); }
 }
+
+@media (max-width: 480px) {
+  .glass-card {
+    padding: 8px;
+    margin: 5px 0;
+  }
+  .ladder-header {
+    display: none;
+  }
+  .fib-item {
+    min-width: 40px;
+    height: 40px;
+    font-size: 0.8rem;
+  }
+  .fib-value {
+    font-size: 0.9rem;
+  }
+  .ladder-container {
+    padding: 5px 0;
+  }
+  .ladder-track {
+    gap: 8px;
+  }
+}
