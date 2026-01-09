@@ -153,7 +153,8 @@ describe('Actions Engine', () => {
     expect(state.grid[1].value).toBe(1);
     expect(state.grid[4].value).toBe(1);
     expect(state.grid[5].value).toBe(1);
-    expect(state.score).toBe(initialState.score - 15 + 7);
+    // 7 is not Fibonacci, so no reward. 1000 - 5 = 995.
+    expect(state.score).toBe(initialState.score - 5);
   });
 
   it('MUL works with diagonals', () => {
@@ -164,18 +165,20 @@ describe('Actions Engine', () => {
     expect(state.grid[1].value).toBe(1);
     expect(state.grid[4].value).toBe(1);
     expect(state.grid[5].value).toBe(1);
-    expect(state.score).toBe(initialState.score - 30 + 6);
+    // 6 is not Fibonacci, so no reward. 1000 - 12 = 988.
+    expect(state.score).toBe(initialState.score - 12);
   });
 
   it('cost deducted even if only itself participates', () => {
     // Isolate a cell
-    const grid: Grid = Array.from({ length: 16 }, () => ({ blocked: true, value: 0 }));
-    grid[10] = { blocked: false, value: 5 };
+    const grid: Grid = Array.from({ length: 16 }, () => ({ blocked: true, value: 0, lastTouchedMove: 0 }));
+    grid[10] = { blocked: false, value: 5, lastTouchedMove: 0 };
     const state = { ...initialState, grid };
 
     const nextState = applyAction(state, 10, 'SUM');
     expect(nextState.grid[10].value).toBe(5);
-    expect(nextState.score).toBe(state.score - 15 + 5);
+    // 5 is Fibonacci, so it grants reward. 1000 - 5 + 5 = 1000.
+    expect(nextState.score).toBe(state.score - 5 + 5);
   });
 
   it('out-of-order fib gives no bonus and does not advance', () => {
@@ -191,7 +194,7 @@ describe('Actions Engine', () => {
     expect(state.grid[0].value).toBe(8);
     expect(state.bestFib).toBe(8);
     expect(state.nextFib).toBe(1000); // Still 1000
-    expect(state.score).toBe(initialState.score - 15 + 8); // No bonus
+    expect(state.score).toBe(initialState.score - 5 + 8); // No bonus
     expect(state.achievedFibs).toEqual([1]);
   });
 
@@ -208,17 +211,17 @@ describe('Actions Engine', () => {
     const state = applyAction(testState, 0, 'SUM');
     expect(state.grid[0].value).toBe(2);
     expect(state.nextFib).toBe(3);
-    // bonus is 2. Score: 1000 - 15 + 2 (result) + 2 (bonus) = 989
-    expect(state.score).toBe(testState.score - 15 + 2 + 2);
+    // Score: 1000 - 5 + 2 (result/bonus) = 997
+    expect(state.score).toBe(testState.score - 5 + 2);
     expect(state.achievedFibs).toEqual([1, 2]);
   });
 
   it('not enough score => gameOver=true and state unchanged (except gameOver flag)', () => {
-    const lowScoreState = { ...initialState, score: 5 };
-    const state = applyAction(lowScoreState, 0, 'SUM'); // cost is 15
+    const lowScoreState = { ...initialState, score: 2 };
+    const state = applyAction(lowScoreState, 0, 'SUM'); // cost is 5
     
     expect(state.gameOver).toBe(true);
-    expect(state.score).toBe(5);
+    expect(state.score).toBe(2);
     expect(state.grid[0].value).toBe(1); // Unchanged
   });
 
@@ -227,17 +230,21 @@ describe('Actions Engine', () => {
     const state = applyAction(highState, 2, 'UNBLOCK'); // 2 is blocked
     expect(state.grid[2].blocked).toBe(false);
     expect(state.grid[2].value).toBe(1);
-    expect(state.score).toBe(highState.score - 120 + 1);
+    // Unblock gives no reward. 200 - 50 = 150.
+    expect(state.score).toBe(highState.score - 50);
   });
 
   it('INC works and deducts cost (and adds bonus if reaches nextFib)', () => {
     // nextFib is 2.
-    const testState = { ...initialState, nextFib: 2 };
+    const testState = { ...initialState, score: 60, nextFib: 2 };
     // grid[0] is 1. INC -> 2.
+    // Cost of INC is 5.
+    // Result is 2.
+    // Bonus is 2 (since it matches nextFib).
+    // User expects score to be 60 - 5 + 2 = 57.
     const state = applyAction(testState, 0, 'INC');
     expect(state.grid[0].value).toBe(2);
-    // score: 1000 - 20 (inc) + 2 (bonus) + 2 (result) = 984
-    expect(state.score).toBe(testState.score - 20 + 2 + 2);
+    expect(state.score).toBe(57);
   });
 
   it('stores undo snapshot in lastMove', () => {
@@ -247,5 +254,42 @@ describe('Actions Engine', () => {
     expect(state.lastMove?.clickedIndex).toBe(0);
     expect(state.lastMove?.prevState.grid[0].value).toBe(1);
     expect(state.grid[0].value).toBe(2);
+  });
+
+  describe('Bug: Unintended points for non-Fibonacci or UNBLOCK', () => {
+    it('UNBLOCK should not grant any points (resultValue for score should be 0)', () => {
+      const state = { ...initialState, score: 100 };
+      const nextState = applyAction(state, 2, 'UNBLOCK'); // cost 50
+      // 100 - 50 = 50. Should NOT be 51.
+      expect(nextState.score).toBe(50);
+    });
+
+    it('SUM with non-Fibonacci result should not grant any points', () => {
+      // Neighbors of 0 are 0, 1, 4, 5. Values: 1, 1, 2, 3. Sum = 7 (not Fib)
+      const state = { ...initialState, score: 100 };
+      const nextState = applyAction(state, 0, 'SUM'); // cost 5
+      // 100 - 5 = 95. Should NOT be 102.
+      expect(nextState.score).toBe(95);
+    });
+
+    it('MUL with non-Fibonacci result should not grant any points', () => {
+      // Neighbors of 0: 1, 1, 2, 3. Let's change one to make it non-Fib.
+      initialState.grid[1].value = 7;
+      // 1 * 7 * 2 * 3 = 42 (not Fib)
+      const state = { ...initialState, score: 100 };
+      const nextState = applyAction(state, 0, 'MUL'); // cost 12
+      // 100 - 12 = 88. Should NOT be 130.
+      expect(nextState.score).toBe(88);
+    });
+
+    it('Fibonacci results should still grant points', () => {
+      // Sum = 5 (Fib). Neighbors 0, 1, 4 are 1, 1, 3.
+      initialState.grid[4].value = 3;
+      initialState.grid[5].blocked = true;
+      const state = { ...initialState, score: 100 };
+      const nextState = applyAction(state, 0, 'SUM'); // cost 5
+      // 100 - 5 + 5 = 100.
+      expect(nextState.score).toBe(100);
+    });
   });
 });

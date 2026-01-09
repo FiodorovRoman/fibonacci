@@ -4,12 +4,12 @@ import { mulberry32, pickRandomUniqueIndexes } from './random';
 export const DEFAULT_CONFIG: GameConfig = {
   size: 4,
   costs: {
-    inc: 20,
-    sum: 15,
-    mul: 30,
-    unblock: 120
+    inc: 5,
+    sum: 5,
+    mul: 12,
+    unblock: 50
   },
-  startScore: 40,
+  startScore: 100,
   startUnblocked: 4
 };
 

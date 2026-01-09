@@ -52,6 +52,7 @@ export function applyAction(
   const nextMoveNumber = (state.moveNumber || 0) + 1;
 
   let resultValue = 0;
+  let scoreReward = 0;
   const participatingIndexes: number[] = [];
 
   if (action === 'UNBLOCK') {
@@ -59,11 +60,13 @@ export function applyAction(
     nextGrid[index].value = 1;
     nextGrid[index].lastTouchedMove = nextMoveNumber;
     resultValue = 1;
+    scoreReward = 0; // Unblocking gives no points
   } else if (action === 'INC') {
     resultValue = nextGrid[index].value + 1;
     nextGrid[index].value = resultValue;
     nextGrid[index].lastTouchedMove = nextMoveNumber;
     nextCounters.inc++;
+    scoreReward = isFibonacci(resultValue) ? resultValue : 0;
   } else if (action === 'SUM' || action === 'MUL') {
     const neighbors = getNeighborIndexes(index, state.grid, config.size);
     participatingIndexes.push(...neighbors);
@@ -84,6 +87,7 @@ export function applyAction(
     // Set clicked cell value = result
     nextGrid[index].value = resultValue;
     nextGrid[index].lastTouchedMove = nextMoveNumber;
+    scoreReward = isFibonacci(resultValue) ? resultValue : 0;
   }
 
   // Update Fibonacci logic
@@ -93,14 +97,15 @@ export function applyAction(
     }
 
     if (resultValue === state.nextFib) {
-      nextScore += resultValue;
+      // Bonus is equal to the number discovered.
+      // We already add scoreReward to the score at the end of the function.
       nextAchievedFibs.push(resultValue);
       nextNextFib = getNextRequiredFib(state.nextFib);
     }
   }
 
-  // Result is added to score
-  nextScore += resultValue;
+  // Result/Bonus is added to score
+  nextScore += scoreReward;
 
   // Auto-blocking logic
   const unblockedCells = nextGrid
