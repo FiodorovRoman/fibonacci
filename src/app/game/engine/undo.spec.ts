@@ -48,4 +48,19 @@ describe('undo', () => {
     const doubleUndonState = undo(undonState);
     expect(doubleUndonState.score).toBe(initialState.score);
   });
+
+  it('should restore gameOver to false when undoing a move that caused gameOver', () => {
+    const initialState = createNewGame(123);
+    const index = initialState.grid.findIndex(c => !c.blocked);
+    
+    // Set score very low so next move causes gameOver
+    const stateBeforeGameOver = { ...initialState, score: 2 };
+    
+    const stateAfterGameOver = applyAction(stateBeforeGameOver, index, 'INC'); // cost 5
+    expect(stateAfterGameOver.gameOver).toBe(true);
+    
+    const stateAfterUndo = undo(stateAfterGameOver);
+    expect(stateAfterUndo.gameOver).toBe(false);
+    expect(stateAfterUndo.score).toBe(2);
+  });
 });

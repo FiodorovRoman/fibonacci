@@ -85,9 +85,33 @@ import { HapticsService } from '../../services/haptics.service';
           </div>
         </div>
 
-        <div *ngIf="state.gameOver" class="game-over">
-          <h2>GAME OVER!</h2>
-          <button (click)="onNewGame()">Try Again</button>
+        <div *ngIf="state.gameOver" class="game-over-overlay">
+          <div class="game-over-card">
+            <h2>GAME OVER</h2>
+            <p class="game-over-reason">Not enough score to perform actions</p>
+            
+            <div class="game-over-stats">
+              <div class="stat-item">
+                <span class="stat-label">Best Fibonacci</span>
+                <span class="stat-value">{{ state.bestFib }}</span>
+              </div>
+              <div class="stat-item">
+                <span class="stat-label">Biggest Number</span>
+                <span class="stat-value">{{ getBiggestNumber() }}</span>
+              </div>
+            </div>
+
+            <div class="game-over-actions">
+              <button class="btn-primary" (click)="onNewGame()">Restart</button>
+              <button 
+                *ngIf="state.lastMove" 
+                class="btn-secondary" 
+                (click)="onUndo()"
+              >
+                Undo last move
+              </button>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -386,31 +410,110 @@ import { HapticsService } from '../../services/haptics.service';
       0% { transform: translate(0, 0) rotate(0deg); opacity: 1; }
       100% { transform: translate(var(--tx), var(--ty)) rotate(var(--tr)); opacity: 0; }
     }
-    .game-over {
-      margin-top: 20px;
-      padding: 20px;
-      background: #fff1f0;
-      border: 2px solid #ffa39e;
+    .game-over-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(255, 255, 255, 0.85);
+      backdrop-filter: blur(4px);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 100;
       border-radius: 16px;
-      animation: shake 0.5s;
+      animation: fadeIn 0.3s ease-out;
     }
-    .game-over h2 {
+    .game-over-card {
+      background: white;
+      padding: 30px;
+      border-radius: 20px;
+      box-shadow: 0 15px 35px rgba(245, 34, 45, 0.15);
+      border: 2px solid #ffa39e;
+      max-width: 90%;
+      width: 320px;
+      text-align: center;
+      animation: slideUp 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+    .game-over-card h2 {
       color: #f5222d;
-      margin-top: 0;
+      font-size: 2rem;
+      margin: 0 0 10px 0;
+      font-weight: 900;
+      letter-spacing: 1px;
     }
-    .game-over button {
+    .game-over-reason {
+      color: #776e65;
+      font-size: 1rem;
+      margin-bottom: 25px;
+      line-height: 1.4;
+    }
+    .game-over-stats {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-bottom: 30px;
+      background: #fff1f0;
+      padding: 15px;
+      border-radius: 12px;
+    }
+    .stat-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .stat-label {
+      color: #8c8c8c;
+      font-size: 0.9rem;
+      font-weight: 600;
+    }
+    .stat-value {
+      color: #262626;
+      font-size: 1.2rem;
+      font-weight: 800;
+    }
+    .game-over-actions {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .game-over-actions button {
+      width: 100%;
+      padding: 14px;
+      font-size: 1rem;
+      font-weight: bold;
+      border-radius: 12px;
+      cursor: pointer;
+      transition: all 0.2s;
+      border: none;
+    }
+    .btn-primary {
       background: #f5222d;
       color: white;
-      border: none;
-      padding: 10px 20px;
-      border-radius: 8px;
-      font-weight: bold;
-      cursor: pointer;
+      box-shadow: 0 4px 10px rgba(245, 34, 45, 0.3);
     }
-    @keyframes shake {
-      0%, 100% { transform: translateX(0); }
-      25% { transform: translateX(-5px); }
-      75% { transform: translateX(5px); }
+    .btn-primary:hover {
+      background: #cf1322;
+      transform: translateY(-2px);
+      box-shadow: 0 6px 15px rgba(245, 34, 45, 0.4);
+    }
+    .btn-secondary {
+      background: #fff;
+      color: #595959;
+      border: 1px solid #d9d9d9 !important;
+    }
+    .btn-secondary:hover {
+      background: #f5f5f5;
+      border-color: #bfbfbf !important;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+    @keyframes slideUp {
+      from { transform: translateY(20px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
     }
   `]
 })
@@ -437,6 +540,10 @@ export class GameComponent {
     this.haptics.tap();
     this.state = undo(this.state);
     this.selectedCellIndex = null;
+  }
+
+  getBiggestNumber(): number {
+    return Math.max(...this.state.grid.map(c => c.value));
   }
 
   onCellSelect(index: number) {

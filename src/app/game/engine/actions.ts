@@ -33,7 +33,11 @@ export function applyAction(
 
   // Handle score and gameOver
   if (!canAfford(state, cost)) {
-    return { ...state, gameOver: true };
+    return { 
+      ...state, 
+      gameOver: true,
+      lastMove: { action, clickedIndex: index, prevState: { ...state } }
+    };
   }
 
   // Prepare next state

@@ -216,13 +216,15 @@ describe('Actions Engine', () => {
     expect(state.achievedFibs).toEqual([1, 2]);
   });
 
-  it('not enough score => gameOver=true and state unchanged (except gameOver flag)', () => {
+  it('not enough score => gameOver=true, state unchanged (except gameOver and lastMove)', () => {
     const lowScoreState = { ...initialState, score: 2 };
     const state = applyAction(lowScoreState, 0, 'SUM'); // cost is 5
     
     expect(state.gameOver).toBe(true);
     expect(state.score).toBe(2);
     expect(state.grid[0].value).toBe(1); // Unchanged
+    expect(state.lastMove).toBeDefined();
+    expect(state.lastMove?.prevState.score).toBe(2);
   });
 
   it('UNBLOCK works and deducts cost', () => {
