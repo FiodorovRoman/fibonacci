@@ -136,6 +136,3 @@ TBD
 **Filosoft Company SRL**
 Moldova
 📧 [contact@filosoft.md](mailto:contact@filosoft.md)
-
-
-Just say which one.
