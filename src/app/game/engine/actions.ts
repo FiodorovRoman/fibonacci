@@ -66,7 +66,7 @@ export function applyAction(
     nextGrid[index].value = resultValue;
     nextGrid[index].lastTouchedMove = nextMoveNumber;
     nextCounters.inc++;
-    scoreReward = isFibonacci(resultValue) ? resultValue : 0;
+    scoreReward = (resultValue === state.nextFib) ? resultValue : 0;
   } else if (action === 'SUM' || action === 'MUL') {
     const neighbors = getNeighborIndexes(index, state.grid, config.size);
     participatingIndexes.push(...neighbors);
@@ -87,7 +87,7 @@ export function applyAction(
     // Set clicked cell value = result
     nextGrid[index].value = resultValue;
     nextGrid[index].lastTouchedMove = nextMoveNumber;
-    scoreReward = isFibonacci(resultValue) ? resultValue : 0;
+    scoreReward = (resultValue === state.nextFib) ? resultValue : 0;
   }
 
   // Update Fibonacci logic

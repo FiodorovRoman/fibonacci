@@ -173,7 +173,7 @@ describe('Actions Engine', () => {
     // Isolate a cell
     const grid: Grid = Array.from({ length: 16 }, () => ({ blocked: true, value: 0, lastTouchedMove: 0 }));
     grid[10] = { blocked: false, value: 5, lastTouchedMove: 0 };
-    const state = { ...initialState, grid };
+    const state = { ...initialState, grid, nextFib: 5 };
 
     const nextState = applyAction(state, 10, 'SUM');
     expect(nextState.grid[10].value).toBe(5);
@@ -194,7 +194,7 @@ describe('Actions Engine', () => {
     expect(state.grid[0].value).toBe(8);
     expect(state.bestFib).toBe(8);
     expect(state.nextFib).toBe(1000); // Still 1000
-    expect(state.score).toBe(initialState.score - 5 + 8); // No bonus
+    expect(state.score).toBe(initialState.score - 5); // No bonus/reward for out-of-order
     expect(state.achievedFibs).toEqual([1]);
   });
 
@@ -286,10 +286,44 @@ describe('Actions Engine', () => {
       // Sum = 5 (Fib). Neighbors 0, 1, 4 are 1, 1, 3.
       initialState.grid[4].value = 3;
       initialState.grid[5].blocked = true;
-      const state = { ...initialState, score: 100 };
+      const state = { ...initialState, score: 100, nextFib: 5 };
       const nextState = applyAction(state, 0, 'SUM'); // cost 5
       // 100 - 5 + 5 = 100.
       expect(nextState.score).toBe(100);
+    });
+
+    it('should only grant Fibonacci bonus once', () => {
+      // Initial state: nextFib is 2.
+      let state = { ...initialState, score: 100, nextFib: 2 };
+      
+      // 1. Discover 2 for the first time
+      state = applyAction(state, 0, 'INC'); // cell 0: 1 -> 2. Cost 5. Bonus 2.
+      // Score: 100 - 5 + 2 = 97. nextFib becomes 3.
+      expect(state.grid[0].value).toBe(2);
+      expect(state.score).toBe(97);
+      expect(state.nextFib).toBe(3);
+
+      // 2. Discover 2 again (on another cell)
+      state = applyAction(state, 1, 'INC'); // cell 1: 1 -> 2. Cost 5.
+      // If the bug exists, it will give +2 points again.
+      // Expected: 97 - 5 = 92.
+      // Buggy: 97 - 5 + 2 = 94.
+      expect(state.grid[1].value).toBe(2);
+      expect(state.score).toBe(92);
+    });
+
+    it('should not grant bonus for out-of-order Fibonacci', () => {
+      // nextFib is 2.
+      // Discover 3 (out of order).
+      initialState.grid[0].value = 2;
+      let state = { ...initialState, score: 100, nextFib: 2 };
+      
+      state = applyAction(state, 0, 'INC'); // cell 0: 2 -> 3. Cost 5.
+      // Expected: 100 - 5 = 95.
+      // Buggy: 100 - 5 + 3 = 98.
+      expect(state.grid[0].value).toBe(3);
+      expect(state.score).toBe(95);
+      expect(state.nextFib).toBe(2); // Should not advance
     });
   });
 });
