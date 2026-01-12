@@ -120,6 +120,7 @@ import { HapticsService } from '../../services/haptics.service';
         [isBlocked]="state.grid[selectedCellIndex].blocked"
         [config]="config"
         [grid]="state.grid"
+        [counters]="state.counters"
         [cellIndex]="selectedCellIndex"
         (actionSelect)="onActionSelect($event)"
         (close)="selectedCellIndex = null"

@@ -26,9 +26,16 @@ export function applyAction(
     cost = config.costs.unblock;
   } else {
     if (cell.blocked) return state;
-    if (action === 'INC') cost = config.costs.inc;
-    else if (action === 'SUM') cost = config.costs.sum;
-    else if (action === 'MUL') cost = config.costs.mul;
+    if (action === 'INC') {
+      const multiplier = Math.floor(state.counters.inc / 10) + 1;
+      cost = config.costs.inc * multiplier;
+    } else if (action === 'SUM') {
+      const multiplier = Math.floor(state.counters.sum / 10) + 1;
+      cost = config.costs.sum * multiplier;
+    } else if (action === 'MUL') {
+      const multiplier = Math.floor(state.counters.mul / 10) + 1;
+      cost = config.costs.mul * multiplier;
+    }
   }
 
   // Handle score and gameOver

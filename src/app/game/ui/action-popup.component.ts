@@ -1,6 +1,6 @@
 import { Component, Input, Output, EventEmitter, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { GameAction, GameConfig, Grid } from '../models/game.models';
+import { GameAction, GameConfig, Grid, ActionCounters } from '../models/game.models';
 import { DEFAULT_CONFIG } from '../engine/init';
 import { getNeighborIndexes } from '../engine/grid';
 
@@ -26,15 +26,15 @@ import { getNeighborIndexes } from '../engine/grid';
           <ng-container *ngIf="!isBlocked">
             <button class="action-btn inc" (click)="onAction('INC')" (mouseenter)="updatePreview('INC')">
               <span class="icon">+1</span>
-              <span class="cost-pill">{{ config.costs.inc }}</span>
+              <span class="cost-pill">{{ getCurrentCost('INC') }}</span>
             </button>
             <button class="action-btn sum" (click)="onAction('SUM')" (mouseenter)="updatePreview('SUM')">
               <span class="icon">Σ</span>
-              <span class="cost-pill">{{ config.costs.sum }}</span>
+              <span class="cost-pill">{{ getCurrentCost('SUM') }}</span>
             </button>
             <button class="action-btn mul" (click)="onAction('MUL')" (mouseenter)="updatePreview('MUL')">
               <span class="icon">×</span>
-              <span class="cost-pill">{{ config.costs.mul }}</span>
+              <span class="cost-pill">{{ getCurrentCost('MUL') }}</span>
             </button>
           </ng-container>
 
@@ -200,6 +200,7 @@ export class ActionPopupComponent implements OnInit {
   @Input() isBlocked: boolean = false;
   @Input() config: GameConfig = DEFAULT_CONFIG;
   @Input() grid: Grid = [];
+  @Input() counters: ActionCounters = { inc: 0, sum: 0, mul: 0 };
   @Input() cellIndex: number | null = null;
   
   @Output() actionSelect = new EventEmitter<GameAction>();
@@ -219,6 +220,20 @@ export class ActionPopupComponent implements OnInit {
 
   onClose() {
     this.close.emit();
+  }
+
+  getCurrentCost(action: GameAction): number {
+    if (action === 'UNBLOCK') return this.config.costs.unblock;
+    
+    const baseCost = action === 'INC' ? this.config.costs.inc :
+                     action === 'SUM' ? this.config.costs.sum :
+                     this.config.costs.mul;
+    
+    const count = action === 'INC' ? this.counters.inc :
+                  action === 'SUM' ? this.counters.sum :
+                  this.counters.mul;
+    
+    return baseCost * (Math.floor(count / 10) + 1);
   }
 
   updatePreview(action: GameAction) {

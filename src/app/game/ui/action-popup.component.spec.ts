@@ -85,4 +85,13 @@ describe('ActionPopupComponent', () => {
     cancelBtn.nativeElement.click();
     expect(closeSpy).toHaveBeenCalled();
   });
+
+  it('should show increased cost after 10 moves', () => {
+    const initialCost = DEFAULT_CONFIG.costs.inc;
+    component.counters = { inc: 10, sum: 0, mul: 0 };
+    fixture.detectChanges();
+
+    const incCostPill = fixture.debugElement.query(By.css('.action-btn.inc .cost-pill')).nativeElement;
+    expect(incCostPill.textContent).toBe((initialCost * 2).toString());
+  });
 });
