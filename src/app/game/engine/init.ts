@@ -1,17 +1,46 @@
-import { GameConfig, GameState, Grid } from '../models/game.models';
+import { Difficulty, GameConfig, GameState, Grid } from '../models/game.models';
 import { mulberry32, pickRandomUniqueIndexes } from './random';
 
-export const DEFAULT_CONFIG: GameConfig = {
-  size: 4,
-  costs: {
-    inc: 5,
-    sum: 5,
-    mul: 12,
-    unblock: 50
+export const DIFFICULTY_CONFIGS: Record<Difficulty, GameConfig> = {
+  EASY: {
+    size: 4,
+    difficulty: 'EASY',
+    costs: {
+      inc: 2,
+      sum: 3,
+      mul: 5,
+      unblock: 20
+    },
+    startScore: 100,
+    startUnblocked: 4
   },
-  startScore: 100,
-  startUnblocked: 4
+  NORMAL: {
+    size: 4,
+    difficulty: 'NORMAL',
+    costs: {
+      inc: 5,
+      sum: 5,
+      mul: 12,
+      unblock: 50
+    },
+    startScore: 100,
+    startUnblocked: 4
+  },
+  HARD: {
+    size: 4,
+    difficulty: 'HARD',
+    costs: {
+      inc: 8,
+      sum: 10,
+      mul: 15,
+      unblock: 75
+    },
+    startScore: 100,
+    startUnblocked: 4
+  }
 };
+
+export const DEFAULT_CONFIG: GameConfig = DIFFICULTY_CONFIGS.NORMAL;
 
 export function createNewGame(seed?: number, config: GameConfig = DEFAULT_CONFIG): GameState {
   const actualSeed = seed ?? Math.floor(Math.random() * 2147483647);

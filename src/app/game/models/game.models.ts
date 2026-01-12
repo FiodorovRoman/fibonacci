@@ -4,8 +4,11 @@ export type Grid = Cell[]; // length 16
 
 export type GameAction = 'INC' | 'SUM' | 'MUL' | 'UNBLOCK';
 
+export type Difficulty = 'EASY' | 'NORMAL' | 'HARD';
+
 export type GameConfig = {
   size: 4;
+  difficulty: Difficulty;
   costs: { inc: number; sum: number; mul: number; unblock: number };
   startScore: number;
   startUnblocked: 4;

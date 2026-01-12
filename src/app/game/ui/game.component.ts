@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { GameState, GameAction, GameConfig, FloatingScore } from '../models/game.models';
-import { createNewGame, DEFAULT_CONFIG } from '../engine/init';
+import { GameState, GameAction, GameConfig, FloatingScore, Difficulty } from '../models/game.models';
+import { createNewGame, DEFAULT_CONFIG, DIFFICULTY_CONFIGS } from '../engine/init';
 import { applyAction } from '../engine/actions';
 import { undo } from '../engine/undo';
 import { GridComponent } from './grid.component';
@@ -56,8 +56,20 @@ import { HapticsService } from '../../services/haptics.service';
         </div>
 
         <div class="controls">
-          <button class="btn-undo" (click)="onUndo()" [disabled]="!state.lastMove">Undo</button>
-          <button class="btn-new" (click)="onNewGame()">New Game</button>
+          <div class="difficulty-selector">
+            <button 
+              *ngFor="let diff of difficulties" 
+              (click)="onSetDifficulty(diff)"
+              [class.active]="config.difficulty === diff"
+              class="diff-btn"
+            >
+              {{ diff }}
+            </button>
+          </div>
+          <div class="controls-row">
+            <button class="btn-undo" (click)="onUndo()" [disabled]="!state.lastMove">Undo</button>
+            <button class="btn-new" (click)="onNewGame()">New Game</button>
+          </div>
         </div>
 
         <div class="grid-wrapper">
@@ -333,6 +345,35 @@ import { HapticsService } from '../../services/haptics.service';
     .controls {
       margin-bottom: 15px;
       display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 12px;
+    }
+    .difficulty-selector {
+      display: flex;
+      gap: 5px;
+      background: #eee;
+      padding: 4px;
+      border-radius: 12px;
+    }
+    .diff-btn {
+      padding: 6px 12px !important;
+      font-size: 0.75rem !important;
+      border: none !important;
+      background: transparent !important;
+      border-radius: 8px !important;
+      color: #666;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .diff-btn.active {
+      background: white !important;
+      color: #222;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      font-weight: bold;
+    }
+    .controls-row {
+      display: flex;
       justify-content: center;
       gap: 10px;
     }
@@ -521,6 +562,7 @@ import { HapticsService } from '../../services/haptics.service';
 export class GameComponent {
   state: GameState = createNewGame();
   config: GameConfig = DEFAULT_CONFIG;
+  difficulties: Difficulty[] = ['EASY', 'NORMAL', 'HARD'];
   selectedCellIndex: number | null = null;
   floatingScores: FloatingScore[] = [];
   showConfetti = false;
@@ -529,9 +571,17 @@ export class GameComponent {
 
   constructor(private haptics: HapticsService) {}
 
+  onSetDifficulty(diff: Difficulty) {
+    if (this.config.difficulty !== diff) {
+      this.haptics.tap();
+      this.config = DIFFICULTY_CONFIGS[diff];
+      this.onNewGame();
+    }
+  }
+
   onNewGame() {
     this.haptics.tap();
-    this.state = createNewGame();
+    this.state = createNewGame(undefined, this.config);
     this.selectedCellIndex = null;
     this.floatingScores = [];
     this.showConfetti = false;
